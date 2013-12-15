@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无锡公交实时查询应用</title>
+    <script type="text/javascript" src="jquery-1.10.1.min.js"></script>
+    <style type="text/css">
+    	* {
+    		margin: 0;
+    		padding: 0;
+    	}
+    	.container {
+    		margin: 0 auto;
+    		padding: 0 auto;
+    		width: 540px;
+    	}
+    	p {
+    		font-size: 9px;
+    		font-family: arial;
+    		margin-bottom: 5px;
+    	}
+    	input {
+    		height: 24px;
+			line-height: 24px;
+			border: 1px solid #999;
+    	}
+    	.t-input {
+    		margin-right: 5px;
+    	}
+    	.btn {
+    		background-color: #388bff;
+    		border-color: #3c8dff #408ffe #3680e6;
+    		color: #fff;
+    		font-size: 9pt;
+    		padding: 0px 14px;
+    		font-size: 13px;
+    		border: 1px solid #d8d8d8;
+    	}
+    </style>
+    <script type="text/javascript">
+    	function parseXML(xml) {
+    	   var results = $('#results');
+    	   $('<ul id="list"><ul>').appendTo(results);
+    	   var list = $('#list');
+           $(xml).find("station").each(function(){   
+               var name = $(this).attr("zhan");    
+               var longitude = $(this).attr("xzhandb");    
+               var latitude = $(this).attr("yzhandb");
+               $('<li>' + name + '</li>').appendTo(list);
+           });
+    	}
+    	
+    	$(document).ready(function() {
+    		$('#search').click(function() {
+    			var busid = $('#busid').val();
+    			if (busid) {
+    				$.ajax({
+   					   type: "GET",
+   					   url: "http://venpoo.com:9090/Default.aspx?Attion=1&Lid=10",
+   					   success: function(msg){
+   					     parseXML(msg);
+   					   }
+   					 });
+    			}
+    			return false;
+    		});
+    	});
+    </script>
+  </head>
+  <body>
+    <div class="container">
+    	<p>路线查询(线路名称):</p>
+    	<form action="">
+    		<input type="text" class="t-input" id="busid" placeholder="请输入线路名">
+    		<a id="search" href="#" class=".btn">查询</a>
+    	</form>
+    	<div id="results">
+    		
+    	</div>
+    </div> <!-- /container -->
+  </body>
+</html>
