@@ -1,0 +1,12 @@
+{
+    "name": "gongjiao360",
+    "version": "1.0.0",
+    "author": "leanist",
+    "description": "The first leanist nodejs app!",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+    }
+}
+
