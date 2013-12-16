@@ -17,7 +17,7 @@
     	p {
     		font-size: 9px;
     		font-family: arial;
-    		margin-bottom: 5px;
+    		margin: 8px 0;
     	}
     	input {
     		height: 24px;
@@ -31,23 +31,81 @@
     		background-color: #388bff;
     		border-color: #3c8dff #408ffe #3680e6;
     		color: #fff;
-    		font-size: 9pt;
+    		font-size: 9px;
     		padding: 0px 14px;
     		font-size: 13px;
     		border: 1px solid #d8d8d8;
+    	}
+    	a.btn {
+    		text-decoration: none;
+    		display: inline-block;
+    		line-height: 24px;
+    		text-align: center;
+    	}
+    	ul.list {
+    		list-style-type: none;
+    		width: 13em;
+    		background-color: #f2f9ff;
+    		border: 1px solid #486B02;
+    	}
+    	ul.list a {
+    		display: block;
+    		border-top: 1px solid;
+    		border-bottom: 1px solid;
+    		padding: 2px 1px;
+    		text-decoration: none;
+    		color: #488be8;
+    		border-color: #DFDFDF;
+    	}
+    	ul.list a:hover {
+    		background-color: #999999;
     	}
     </style>
     <script type="text/javascript">
     	function parseXML(xml) {
     	   var results = $('#results');
-    	   $('<ul id="list"><ul>').appendTo(results);
+    	   $('<ul id="list" class="list"><ul>').appendTo(results);
     	   var list = $('#list');
-           $(xml).find("station").each(function(){   
-               var name = $(this).attr("zhan");    
-               var longitude = $(this).attr("xzhandb");    
-               var latitude = $(this).attr("yzhandb");
-               $('<li>' + name + '</li>').appendTo(list);
-           });
+    	   var xmldom = $(xml);
+    	   var busLineInfo = xmldom.find('BusLineInfo');
+    	   var busid = busLineInfo.attr('ID');
+    	   var busw = busLineInfo.attr('busw');
+    	   var desc = busLineInfo.attr('shijian');
+    	   busLineInfo.find('LinInfo').each(function(index, value) {
+    		   if (index == 0) {
+    			   $(this).find("station").each(function(){   
+    	               var name = $(this).attr("zhan");    
+    	               var longitude = $(this).attr("xzhandb");    
+    	               var latitude = $(this).attr("yzhandb");
+    	               var pm = $(this).attr("pm");
+    	               var li = $('<li><a id="' + pm + '" href="#"> ' + name + '</a></li>').appendTo(list);
+                       li.click(function() {
+                    	   var liThis = $(this);
+                    	   $.ajax({
+           					   type: "GET",
+           					   url: "http://venpoo.com:9090/Default.aspx?Attion=2&Lid=" + busid + "&Lkind=0&Lpm=" + pm + "&fuck=1",
+           					   success: function(msg){
+           					       $('#results p').detach();
+           					       var xmldom = $(msg);
+           					       xmldom.find('busnow').each(function() {
+           					    	   var distance = $(this).attr("Distance");
+           					    	   var location = $(this).attr("Location");
+           					    	   var time = $(this).attr("Time");
+           					    	   $('#results p').detach();
+           					    	   if (distance) {
+           					    		 $('<p>于 '+ time + ' 到达 ' +  location + ' 距离 ' + distance + '站</p>').appendTo(liThis);
+           					    	   } else {
+           				    			 $('<p>'+ location +'</p>').appendTo(liThis);
+           					    	   }
+           					       });
+           					   }
+           				   });
+                    	   
+                    	   return false;
+                       });
+    	           });
+    		   }
+    	   });
     	}
     	
     	$(document).ready(function() {
@@ -56,7 +114,7 @@
     			if (busid) {
     				$.ajax({
    					   type: "GET",
-   					   url: "http://venpoo.com:9090/Default.aspx?Attion=1&Lid=10",
+   					   url: "http://venpoo.com:9090/Default.aspx?Attion=1&Lid=" + busid,
    					   success: function(msg){
    					     parseXML(msg);
    					   }
@@ -72,10 +130,9 @@
     	<p>路线查询(线路名称):</p>
     	<form action="">
     		<input type="text" class="t-input" id="busid" placeholder="请输入线路名">
-    		<a id="search" href="#" class=".btn">查询</a>
+    		<a id="search" href="#" class="btn">查询</a>
     	</form>
     	<div id="results">
-    		
     	</div>
     </div> <!-- /container -->
   </body>
