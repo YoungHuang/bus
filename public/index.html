@@ -64,48 +64,53 @@
     <script type="text/javascript">
     	function parseXML(xml) {
     	   var results = $('#results');
-            $('#list').detach();
-    	   $('<ul id="list" class="list"><ul>').appendTo(results);
-    	   var list = $('#list');
+           $('#list').detach();
     	   var xmldom = $(xml);
     	   var busLineInfo = xmldom.find('BusLineInfo');
     	   var busid = busLineInfo.attr('ID');
     	   var busw = busLineInfo.attr('busw');
     	   var desc = busLineInfo.attr('shijian');
-    	   busLineInfo.find('LinInfo').each(function(index, value) {
-    		   if (index == 0) {
-    			   $(this).find("station").each(function(){   
-    	               var name = $(this).attr("zhan");    
-    	               var longitude = $(this).attr("xzhandb");    
-    	               var latitude = $(this).attr("yzhandb");
-    	               var pm = $(this).attr("pm");
-    	               var li = $('<li><a id="' + pm + '" href="#"> ' + name + '</a></li>').appendTo(list);
-                       li.click(function() {
-                    	   var liThis = $(this);
-                    	   $.ajax({
-           					   type: "GET",
-           					   url: "http://127.0.0.1:18080/Default.aspx?Attion=2&Lid=" + busid + "&Lkind=0&Lpm=" + pm + "&fuck=1",
-           					   success: function(msg){
-           					       $('#results p').detach();
-           					       var xmldom = $(msg);
-           					       xmldom.find('busnow').each(function() {
-           					    	   var distance = $(this).attr("Distance");
-           					    	   var location = $(this).attr("Location");
-           					    	   var time = $(this).attr("Time");
-           					    	   $('#results p').detach();
-           					    	   if (distance) {
-           					    		 $('<p>于 '+ time + ' 到达 ' +  location + ' 距离 ' + distance + '站</p>').appendTo(liThis);
-           					    	   } else {
-           				    			 $('<p>'+ location +'</p>').appendTo(liThis);
-           					    	   }
-           					       });
-           					   }
-           				   });
-                    	   
-                    	   return false;
-                       });
-    	           });
+    	   busLineInfo.find('LinInfo').each(function() {
+    		   var kind = $(this).attr("kind");
+    		   var listid = "list" + kind;
+    		   $('<ul id="' + listid + '" class="list"><ul>').appendTo(results);
+    		   var list = $('#' + listid);
+    		   
+    		   if (kind == 1) {
+    			   list.css("display", "none");
     		   }
+    		   
+   			   $(this).find("station").each(function(){   
+   	               var name = $(this).attr("zhan");    
+   	               var longitude = $(this).attr("xzhandb");    
+   	               var latitude = $(this).attr("yzhandb");
+   	               var pm = $(this).attr("pm");
+   	               var li = $('<li><a id="' + pm + '" href="#"> ' + name + '</a></li>').appendTo(list);
+                      li.click(function() {
+                   	   var liThis = $(this);
+                   	   $.ajax({
+          					   type: "GET",
+          					   url: "/Default.aspx?Attion=2&Lid=" + busid + "&Lkind=" + kind + "&Lpm=" + pm + "&fuck=1",
+          					   success: function(msg){
+          					       $('#results p').detach();
+          					       var xmldom = $(msg);
+          					       xmldom.find('busnow').each(function() {
+          					    	   var distance = $(this).attr("Distance");
+          					    	   var location = $(this).attr("Location");
+          					    	   var time = $(this).attr("Time");
+          					    	   $('#results p').detach();
+          					    	   if (distance) {
+          					    		 $('<p>于 '+ time + ' 到达 ' +  location + ' 距离 ' + distance + '站</p>').appendTo(liThis);
+          					    	   } else {
+          				    			 $('<p>'+ location +'</p>').appendTo(liThis);
+          					    	   }
+          					       });
+          					   }
+          				   });
+                   	   
+                   	   return false;
+                      });
+   	           });
     	   });
     	}
     	
@@ -115,12 +120,24 @@
     			if (busid) {
     				$.ajax({
    					   type: "GET",
-   					   url: "http://127.0.0.1:18080/Default.aspx?Attion=1&Lid=" + busid,
+   					   url: "/Default.aspx?Attion=1&Lid=" + busid,
    					   success: function(msg){
    					     parseXML(msg);
    					   }
    					 });
     			}
+    			return false;
+    		});
+    		
+    		$('#up').click(function() {
+    			$('#list0').css("display", "block");
+    			$('#list1').css("display", "none");
+    			return false;
+    		});
+    		
+    		$('#down').click(function() {
+    			$('#list0').css("display", "none");
+    			$('#list1').css("display", "block");
     			return false;
     		});
     	});
@@ -134,6 +151,8 @@
     		<a id="search" href="#" class="btn">查询</a>
     	</form>
     	<div id="results">
+    		<a id="up" href="#" class="btn">上行</a>
+    		<a id="down" href="#" class="btn">下行</a>
     	</div>
     </div> <!-- /container -->
   </body>
