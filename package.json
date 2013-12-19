@@ -4,9 +4,10 @@
     "author": "leanist",
     "description": "The first leanist nodejs app!",
     "scripts": {
-        "start": "node server.js"
+        "start": "node app.js"
     },
     "dependencies": {
+        "express": "3.4.7"
     }
 }
 
