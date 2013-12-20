@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>无锡公交实时查询应用</title>
-    <script type="text/javascript" src="jquery-1.10.1.min.js"></script>
+    <script type="text/javascript" src="javascripts/jquery-1.10.1.min.js"></script>
     <style type="text/css">
     	* {
     		margin: 0;
@@ -64,6 +64,7 @@
     <script type="text/javascript">
     	function parseXML(xml) {
     	   var results = $('#results');
+            $('#list').detach();
     	   $('<ul id="list" class="list"><ul>').appendTo(results);
     	   var list = $('#list');
     	   var xmldom = $(xml);
@@ -83,7 +84,7 @@
                     	   var liThis = $(this);
                     	   $.ajax({
            					   type: "GET",
-           					   url: "http://venpoo.com:9090/Default.aspx?Attion=2&Lid=" + busid + "&Lkind=0&Lpm=" + pm + "&fuck=1",
+           					   url: "http://127.0.0.1:18080/Default.aspx?Attion=2&Lid=" + busid + "&Lkind=0&Lpm=" + pm + "&fuck=1",
            					   success: function(msg){
            					       $('#results p').detach();
            					       var xmldom = $(msg);
@@ -114,7 +115,7 @@
     			if (busid) {
     				$.ajax({
    					   type: "GET",
-   					   url: "http://venpoo.com:9090/Default.aspx?Attion=1&Lid=" + busid,
+   					   url: "http://127.0.0.1:18080/Default.aspx?Attion=1&Lid=" + busid,
    					   success: function(msg){
    					     parseXML(msg);
    					   }
